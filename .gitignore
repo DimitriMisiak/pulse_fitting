@@ -1,0 +1,12 @@
+# ignoring the compiled python file
+*.pyc
+
+.spyproject/
+
+__pycache__/
+
+# ignoring the results produced by the tests
+archive/
+*.txt
+*.npz
+*.json

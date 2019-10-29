@@ -17,6 +17,7 @@ from comparator_class import model_function, Comparator
 # parameters to launch mcmc
 config_mcmc_path = 'mcmc_config.json'
 walkers_per_dim = 10
+max_n = 10000
 tau_rtol = 0.01
 filename = "tutorial.h5"
 fake_data = np.load('fake_data.npz')
@@ -35,7 +36,6 @@ prior_dist = config['Prior']['distribution']
 
 # processing parameters
 ndim = len(pinit)
-max_n = 10000
 nwalkers = walkers_per_dim * ndim
 
 
