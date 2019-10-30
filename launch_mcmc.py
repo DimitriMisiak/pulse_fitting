@@ -18,7 +18,7 @@ if len(sys.argv) != 4:
 stream, detector, model = sys.argv[1:]
 
 # hard coding the SAVE directories
-ARC_DIR = '/home/misiak/projects/pulse_fitting/archive'
+ARC_DIR = '/pbs/home/d/dmisiak/mcmc_output'
 
 label = '_'.join((stream, detector, model))
 save_dir = '/'.join((ARC_DIR, label))

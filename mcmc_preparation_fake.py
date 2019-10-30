@@ -19,7 +19,7 @@ if len(sys.argv) != 2:
 model, = sys.argv[1:]
 
 # hard coding the DATA and SAVE directories
-ARC_DIR = '/home/misiak/projects/pulse_fitting/archive'
+ARC_DIR = '/pbs/home/d/dmisiak/mcmc_output'
 
 label = '_'.join((model, 'fake'))
 save_dir = '/'.join((ARC_DIR, label))

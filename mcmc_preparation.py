@@ -22,9 +22,9 @@ if len(sys.argv) != 4:
 stream, detector, model = sys.argv[1:]
 
 # hard coding the DATA and SAVE directories
-DATA_DIR = '/home/misiak/Data/data_run59'
+DATA_DIR = '/sps/edelweis/CRYO_IPNL/BatchOUTPUT'
 
-ARC_DIR = '/home/misiak/projects/pulse_fitting/archive'
+ARC_DIR = '/pbs/home/d/dmisiak/mcmc_output'
 
 label = '_'.join((stream, detector, model))
 save_dir = '/'.join((ARC_DIR, label))
