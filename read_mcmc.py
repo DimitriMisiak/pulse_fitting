@@ -19,7 +19,7 @@ import corner
 
 
 filename = "archive/cca_true_complete.h5"
-reader = emcee.backends.HDFBackend(filename)
+reader = emcee.backends.HDFBackend(filename, read_only=True)
 
 nwalkers, ndim = reader.shape
 #tau = reader.get_autocorr_time()
@@ -80,6 +80,25 @@ plt.close('all')
 
     
 
+# =============================================================================
+# AUTOCORR TIME
+# =============================================================================
+
+try:
+    autocorr = np.loadtxt('autocorr_time.txt')
+    y = autocorr
+    index = len(y)
+    
+    n = 100*np.arange(1, index+1)
+    
+    plt.plot(n, n / 100.0, "--k")
+    plt.plot(n, y)
+    plt.xlim(0, n.max())
+    plt.ylim(0, y.max() + 0.1*(y.max() - y.min()))
+    plt.xlabel("number of steps")
+    plt.ylabel(r"mean $\hat{\tau}$");
+except:
+    print('The file autocorr_time.txt cannot be found.')
 
 
 # =============================================================================

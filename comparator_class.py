@@ -6,32 +6,49 @@ Created on Tue Oct 15 11:24:11 2019
 @author: misiak
 """
 
-import matplotlib.pyplot as plt
 import numpy as np
-
+import math as m
 import red_magic as rmc
 
-model_pulse = rmc.Model_pulse('2exp')
+model_pulse_2exp = rmc.Model_pulse('2exp')
 
-def model_function(param, time_array):
+def var_change_2exp(param):
     eps, logt1, logt2, tautherm, t0 = param
     t1 = 10**logt1
     t2 = 10**logt2
-    return model_pulse.function([eps, t1, t2, tautherm, t0], time_array)
+    return eps, t1, t2, tautherm, t0
+
+def inv_var_change_2exp(param):
+    eps, logt1, logt2, tautherm, t0 = param
+    t1 = m.log10(logt1)
+    t2 = m.log10(logt2)
+    return eps, t1, t2, tautherm, t0
+
+def model_function_2exp(param, time_array):
+    param_good = var_change_2exp(param)
+    return model_pulse_2exp.function(param_good, time_array)
 
 
 class Comparator(object):
     
-    def __init__(self, data, model_fun):
+    def __init__(self, data, model):
         
         self.data = data
-        self.model_fun = model_fun
+        
+        if model == '2exp':
+            self.model_instance = model_pulse_2exp
+            self.model_fun = model_function_2exp
+            self.parameters_0 = inv_var_change_2exp(model_pulse_2exp.parameters_0)[:-1]
+        else:
+            raise Exception('Model "{}" is not implemented yet.'.format(model))
         
         attr_lab = ('pulse_data', 'noise_data', 't0_data', 'time_array')
         for lab in attr_lab:
             setattr(self, lab, self.data[lab])
        
         self.fs = (self.time_array[1]-self.time_array[0])**-1
+        self.nsamples = self.time_array.size
+        self.wlen = self.nsamples / self.fs
         self.freq_array = rmc.psd_freq(self.time_array)
         self.fft_data = [np.fft.fft(pulse) for pulse in self.pulse_data]
 
@@ -69,19 +86,19 @@ class Comparator(object):
         chi2_tot = np.sum(chi2_list)
         return chi2_tot
    
-    
+# for debug
 if __name__ == '__main__':
     
-    fake_data = np.load('fake_data.npz')
-
-    compa = Comparator(fake_data, model_function)
+#    data_path = 'archive/2exp_fake/fake_data.npz'
+    data_path = 'archive/ti04l001_RED71_2exp/true_data.npz'    
     
-    p0 = [0.1, -2, -1, 5e-3]
+    data = np.load(data_path)
+
+    compa = Comparator(data, '2exp')
+    
+    p0 = compa.parameters_0
     
     chi2_amp_list = compa.chi2_amp_fun(p0)
     
     chi2 = compa.chi2_fun(p0)
-    
-    
-    
     

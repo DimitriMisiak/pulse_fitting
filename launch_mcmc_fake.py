@@ -12,20 +12,20 @@ import json
 from run_mcmc_function import run_mcmc
 
 # getting arguments from command line
-if len(sys.argv) != 4:
-    raise Exception('Expecting 3 arguments: stream, detector and model')
+if len(sys.argv) != 2:
+    raise Exception('Expecting 1 argument: model')
     
-stream, detector, model = sys.argv[1:]
+model, = sys.argv[1:]
 
-# hard coding the SAVE directories
+# hard coding the DATA and SAVE directories
 ARC_DIR = '/home/misiak/projects/pulse_fitting/archive'
 
-label = '_'.join((stream, detector, model))
+label = '_'.join((model, 'fake'))
 save_dir = '/'.join((ARC_DIR, label))
 
 assert os.path.isdir(save_dir)
 
-data_path = '/'.join((save_dir, 'true_data.npz'))
+data_path = '/'.join((save_dir, 'fake_data.npz'))
 h5_path = '/'.join((save_dir, 'mcmc_output.h5'))
 config_path = '/'.join((save_dir, 'mcmc_config.json'))
 autocorr_save = '/'.join((save_dir, 'autocorr_time.txt'))
