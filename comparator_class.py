@@ -44,7 +44,7 @@ def inv_var_change_3exp(param):
     logt1 = m.log10(t1)
     logt2 = m.log10(t2)
     logt3 = m.log10(t3)
-    return eps, ups, t1, t2, t3, tautherm, t0
+    return eps, ups, logt1, logt2, logt3, tautherm, t0
 
 def model_function_3exp(param, time_array):
     param_good = var_change_3exp(param)
