@@ -17,13 +17,13 @@ plt.close('all')
 #%%
 import corner
 
-
-filename = "archive/cca_true_complete.h5"
+dirname = '2exp_fake'
+filename = "/home/misiak/Analysis/pulse_fitting/mcmc_output/{}/mcmc_output.h5".format(dirname)
 reader = emcee.backends.HDFBackend(filename, read_only=True)
 
 nwalkers, ndim = reader.shape
-#tau = reader.get_autocorr_time()
-tau = 2
+tau = reader.get_autocorr_time()
+#tau = 2
 burnin = int(2*np.max(tau))
 #burnin=5000
 thin = int(0.5*np.min(tau))
@@ -85,7 +85,7 @@ plt.close('all')
 # =============================================================================
 
 try:
-    autocorr = np.loadtxt('autocorr_time.txt')
+    autocorr = np.loadtxt('/home/misiak/Analysis/pulse_fitting/mcmc_output/{}/autocorr_time.txt'.format(dirname))
     y = autocorr
     index = len(y)
     
@@ -247,8 +247,9 @@ for ax in axes:
 #samples = np.vstack(chain_ok_list)
 #
 #best_ind = np.unravel_index(lnprob.argmax(), lnprob.shape)
+best_ind = log_prob_samples.argmax()
 #best_chi2 = -2 * lnprob[best_ind]
-#xopt = chain[best_ind]
+xopt = samples[best_ind]
 #
 #
 ### CORRELATION plot
@@ -272,7 +273,7 @@ fig_corner = corner.corner(
         bins=50, smooth=1,
         labels=labels,
         quantiles=[0.16, 0.5, 0.84], show_titles=True,
-#            truths=xopt,
+        truths=xopt,
         title_kwargs={"fontsize": 12}
 )
 fig_corner.tight_layout()

@@ -18,6 +18,8 @@ def data_generation(model, npz_path,
     
     if model == '2exp':
         model_pulse = rmc.Model_pulse(model='2exp')
+    elif model == '3exp':
+        model_pulse = rmc.Model_pulse(model='3exp')
     else:
         raise Exception('Model "{}" is not implemented yet.'.format(model))
         
@@ -59,7 +61,7 @@ def data_generation(model, npz_path,
 
 if __name__ == '__main__':
     
-    model = '2exp'
+    model = '3exp'
     npz_path = '/home/misiak/projects/pulse_fitting/archive/fake_data.npz'
     
     data_generation(model, npz_path, wlen=10)

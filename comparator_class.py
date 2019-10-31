@@ -10,6 +10,7 @@ import numpy as np
 import math as m
 import red_magic as rmc
 
+# 2exp functions
 model_pulse_2exp = rmc.Model_pulse('2exp')
 
 def var_change_2exp(param):
@@ -19,14 +20,35 @@ def var_change_2exp(param):
     return eps, t1, t2, tautherm, t0
 
 def inv_var_change_2exp(param):
-    eps, logt1, logt2, tautherm, t0 = param
-    t1 = m.log10(logt1)
-    t2 = m.log10(logt2)
-    return eps, t1, t2, tautherm, t0
+    eps, t1, t2, tautherm, t0 = param
+    logt1 = m.log10(t1)
+    logt2 = m.log10(t2)
+    return eps, logt1, logt2, tautherm, t0
 
 def model_function_2exp(param, time_array):
     param_good = var_change_2exp(param)
     return model_pulse_2exp.function(param_good, time_array)
+
+# 3exp function
+model_pulse_3exp = rmc.Model_pulse('3exp')
+
+def var_change_3exp(param):
+    eps, ups, logt1, logt2, logt3, tautherm, t0 = param
+    t1 = 10**logt1
+    t2 = 10**logt2
+    t3 = 10**logt3
+    return eps, ups, t1, t2, t3, tautherm, t0
+
+def inv_var_change_3exp(param):
+    eps, ups, t1, t2, t3, tautherm, t0 = param
+    logt1 = m.log10(t1)
+    logt2 = m.log10(t2)
+    logt3 = m.log10(t3)
+    return eps, ups, t1, t2, t3, tautherm, t0
+
+def model_function_3exp(param, time_array):
+    param_good = var_change_3exp(param)
+    return model_pulse_3exp.function(param_good, time_array)
 
 
 class Comparator(object):
@@ -39,6 +61,10 @@ class Comparator(object):
             self.model_instance = model_pulse_2exp
             self.model_fun = model_function_2exp
             self.parameters_0 = inv_var_change_2exp(model_pulse_2exp.parameters_0)[:-1]
+        elif model == '3exp':
+            self.model_instance = model_pulse_3exp
+            self.model_fun = model_function_3exp
+            self.parameters_0 = inv_var_change_3exp(model_pulse_3exp.parameters_0)[:-1]
         else:
             raise Exception('Model "{}" is not implemented yet.'.format(model))
         
@@ -94,7 +120,7 @@ if __name__ == '__main__':
     
     data = np.load(data_path)
 
-    compa = Comparator(data, '2exp')
+    compa = Comparator(data, '3exp')
     
     p0 = compa.parameters_0
     
