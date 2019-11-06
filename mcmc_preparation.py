@@ -22,9 +22,35 @@ if len(sys.argv) != 4:
 stream, detector, model = sys.argv[1:]
 
 # hard coding the DATA and SAVE directories
-DATA_DIR = '/home/misiak/Data/data_run59'
+DATA_DIR_LOCAL = '/home/misiak/Data/data_run59'
+ARC_DIR_LOCAL = '/home/misiak/projects/pulse_fitting/archive'
+DATA_DIR_CC = '/sps/edelweis/CRYO_IPNL/BatchOUTPUT'
+ARC_DIR_CC = '/pbs/home/d/dmisiak/mcmc_output'
 
-ARC_DIR = '/home/misiak/projects/pulse_fitting/archive'
+# priority to local path, then CC, then raise exception of paths not found.
+if os.path.isdir(ARC_DIR_LOCAL):
+    ARC_DIR = ARC_DIR_LOCAL
+elif os.path.isdir(ARC_DIR_CC):
+    ARC_DIR = ARC_DIR_CC
+else:
+    raise Exception(
+            (
+                    'The directories {} could not be found. ARC_DIR cannot be assigned.'
+            ).format(ARC_DIR_LOCAL, ARC_DIR_CC)
+    )
+
+# priority to local path, then CC, then raise exception of paths not found.
+if os.path.isdir(DATA_DIR_LOCAL):
+    DATA_DIR = DATA_DIR_LOCAL
+elif os.path.isdir(DATA_DIR_CC):
+    DATA_DIR = DATA_DIR_CC
+else:
+    raise Exception(
+            (
+                    'The directories {} could not be found. DATA_DIR cannot be assigned'
+            ).format(DATA_DIR_LOCAL, DATA_DIR_CC)
+    )
+
 
 label = '_'.join((stream, detector, model))
 save_dir = '/'.join((ARC_DIR, label))

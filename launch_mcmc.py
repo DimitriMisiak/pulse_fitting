@@ -18,7 +18,21 @@ if len(sys.argv) != 4:
 stream, detector, model = sys.argv[1:]
 
 # hard coding the SAVE directories
-ARC_DIR = '/home/misiak/projects/pulse_fitting/archive'
+ARC_DIR_LOCAL = '/home/misiak/projects/pulse_fitting/archive'
+ARC_DIR_CC = '/pbs/home/d/dmisiak/mcmc_output'
+
+# priority to local path, then CC, then raise exception of paths not found.
+if os.path.isdir(ARC_DIR_LOCAL):
+    ARC_DIR = ARC_DIR_LOCAL
+elif os.path.isdir(ARC_DIR_CC):
+    ARC_DIR = ARC_DIR_CC
+else:
+    raise Exception(
+            (
+                    'The directories {} could not be found.'
+            ).format(ARC_DIR_LOCAL, ARC_DIR_CC)
+    )
+
 
 label = '_'.join((stream, detector, model))
 save_dir = '/'.join((ARC_DIR, label))
