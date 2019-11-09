@@ -95,7 +95,7 @@ class Model(object):
         if complete:
             
             recursion_counter = 0
-            loss_fraction = sample_array.shape[0]/size
+            loss_fraction = sample_array.shape[0]/size + 1e-3
             
             while sample_array.shape[0] < size:
                 
@@ -442,7 +442,7 @@ if __name__ == '__main__':
 #    data_path = 'archive/2exp_fake/fake_data.npz'
     data_path = 'archive/ti04l001_RED71_2exp/true_data.npz'    
     
-    ato = Atelier(data_path, '3exp')
+    ato = Atelier(data_path, '2exp')
     
     p0 = ato.parameters_0
     

@@ -8,7 +8,6 @@ Created on Mon Sep 23 12:53:05 2019
 
 import numpy as np
 import matplotlib.pyplot as plt
-import json
 
 import red_magic as rmc
 

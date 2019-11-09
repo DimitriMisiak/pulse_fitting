@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 plt.close('all')
 
 from _fake_data import data_generation
-from analysis_config import proto_fitting
 
 
 # getting arguments from command line
@@ -23,24 +22,24 @@ model, = sys.argv[1:]
 
 
 # hard coding the DATA and SAVE directories
-ARC_DIR_LOCAL = '/home/misiak/projects/Analysis/pulse_fitting/event_library'
-ARC_DIR_CC = '/pbs/home/d/dmisiak/Analysis/pulse_fitting/event_library'
+LIB_DIR_LOCAL = '/home/misiak/Analysis/pulse_fitting/event_library_test'
+LIB_DIR_CC = '/pbs/home/d/dmisiak/Analysis/pulse_fitting/event_library'
 
 # priority to local path, then CC, then raise exception of paths not found.
-if os.path.isdir(ARC_DIR_LOCAL):
-    ARC_DIR = ARC_DIR_LOCAL
-elif os.path.isdir(ARC_DIR_CC):
-    ARC_DIR = ARC_DIR_CC
+if os.path.isdir(LIB_DIR_LOCAL):
+    LIB_DIR = LIB_DIR_LOCAL
+elif os.path.isdir(LIB_DIR_CC):
+    LIB_DIR = LIB_DIR_CC
 else:
     raise Exception(
             (
-                    'The directories {} could not be found. ARC_DIR cannot be assigned.'
-            ).format(ARC_DIR_LOCAL, ARC_DIR_CC)
+                    'The directories {} could not be found. LIB_DIR cannot be assigned.'
+            ).format(LIB_DIR_LOCAL, LIB_DIR_CC)
     )
 
 
 label = '_'.join((model, 'fake'))
-save_dir = '/'.join((ARC_DIR, label))
+save_dir = '/'.join((LIB_DIR, label))
 
 # super mkdir for the save directories
 path_list = (save_dir,)
@@ -64,7 +63,7 @@ config['Data'] = {
         'model': model      
 }
 config['Selection'] = {
-        'directory': ARC_DIR,
+        'directory': LIB_DIR,
 }
 
 configpath = '/'.join((save_dir, 'config.json'))

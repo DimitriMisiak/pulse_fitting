@@ -19,15 +19,18 @@ plt.close('all')
 # GETTING THE FILES
 # =============================================================================
 #SAVE_DIR = '/home/misiak/Analysis/pulse_fitting/mcmc_output/ti13l002_RED71_3exp'
-SAVE_DIR = '/home/misiak/Analysis/pulse_fitting/mcmc_output/ti12l000_RED71_2exp'
+#SAVE_DIR = '/home/misiak/Analysis/pulse_fitting/mcmc_output/ti12l000_RED71_2exp'
+SAVE_DIR ='archive'
 
 h5_path = "{}/mcmc_output.h5".format(SAVE_DIR)
-cfg_path = "{}/mcmc_config.json".format(SAVE_DIR)
 autocorr_path = "{}/autocorr_time.txt".format(SAVE_DIR)
 
 reader = emcee.backends.HDFBackend(h5_path, read_only=True)
-with open(cfg_path, 'r') as cfg:
-    config = json.load(cfg)
+#with open(cfg_path, 'r') as cfg:
+#    config = json.load(cfg)
+
+from _atelier_class import Model_2exp_log
+model = Model_2exp_log()
 
 # =============================================================================
 # EXTRACTING THE DATA
@@ -36,19 +39,23 @@ with open(cfg_path, 'r') as cfg:
 nwalkers, ndim = reader.shape
 acceptance = reader.accepted / reader.iteration
 
-labels = config['Parameters']['label']
+#labels = config['Parameters']['label']
+labels = model.labels
 
 try:
     tau = reader.get_autocorr_time()
+    assert not np.any(np.isnan(tau))
+    
+    burnin = int(2*np.max(tau))
+    thin = int(0.5*np.min(tau))
+    
 except:
     # happens if the mcmc is ended before completion
     # this except is to allow some debug
     print('No thinning of burnin, BE CAREFUL /!\ ')
-    tau = 2
-
-burnin = int(2*np.max(tau))
-#burnin = 20000
-thin = int(0.5*np.min(tau))
+    tau = 0
+    burnin = 0
+    thin = 1
 
 chain_raw = reader.get_chain()
 log_prob_raw = reader.get_log_prob()
@@ -164,19 +171,21 @@ fig.subplots_adjust(hspace=0)
 # =============================================================================
 # CORRELATION PLOT
 # =============================================================================
-fig_correlation, ax = plt.subplots(2, sharex=True, num='CORRELATION')
-for a in ax:
-    a.grid()
-    a.set_xscale('log')
-ax[1].set_xlabel('Iterations')
-ax[1].set_ylabel('Corr p0')
-ax[0].set_ylabel('p0')
-
-for c in chain[:,:,0].T:
-    funk = emcee.autocorr.function_1d(c)
-    ax[0].plot(c)
-    ax[1].plot(funk)
-
+try:
+    fig_correlation, ax = plt.subplots(2, sharex=True, num='CORRELATION')
+    for a in ax:
+        a.grid()
+        a.set_xscale('log')
+    ax[1].set_xlabel('Iterations')
+    ax[1].set_ylabel('Corr p0')
+    ax[0].set_ylabel('p0')
+    
+    for c in chain[:,:,0].T:
+        funk = emcee.autocorr.function_1d(c)
+        ax[0].plot(c)
+        ax[1].plot(funk)
+except:
+    print('No correlation plot')
 # =============================================================================
 # CORNER PLOT
 # =============================================================================
@@ -184,7 +193,7 @@ for c in chain[:,:,0].T:
 chain_flat = np.reshape(chain_acc, (-1, ndim))
 
 arg_opt = np.unravel_index(np.argmax(log_prob_samples), log_prob_samples.shape)
-xopt = chain_acc[arg_opt]
+xopt = chain[arg_opt]
 
 nsamples = chain_flat.shape[0]
 
@@ -192,11 +201,6 @@ xinf, xmed, xsup = np.percentile(chain_flat, [16, 50, 84], axis=0)
 sig_inf = xmed - xinf
 sig_sup = xsup - xmed
 
-
-#dist_list = [getattr(scipy.stats, dist) for dist in config['Prior']['distribution']]
-dist_list = config['Prior']['distribution']
-arg1_list = config['Prior']['arg1']
-arg2_list = config['Prior']['arg2']
 
 nbins = 50
 
@@ -215,9 +219,7 @@ range_corner = [(e.min(), e.max()) for e in chain_flat.T]
 from _atelier_class import Atelier
 ato = Atelier('archive/ti04l001_RED71_2exp/true_data.npz', '2exp')
 
-A = ato.init_walkers(nsamples)
-
-
+A = ato.init_walkers(nsamples*100)
 
 fig_corner = corner.corner(
         chain_flat,
@@ -278,7 +280,7 @@ for i in range(ndim):
     
     ndecimal = len( str(min([s_inf, s_sup])).split('.')[-1] )
 
-    text = r"${0}=\left({{{1:.{p}f}}}_{{-{2}}}^{{+{3}}} \right) \times 10^{{{4}}}$"
+    text = r"{0}$=\left({{{1:.{p}f}}}_{{-{2}}}^{{+{3}}} \right) \times 10^{{{4}}}$"
     ax.set_title(text.format(labels[i], med, s_inf, s_sup, med_power, p=ndecimal),
                  fontsize=10)
     
