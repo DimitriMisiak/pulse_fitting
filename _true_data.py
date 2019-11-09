@@ -103,10 +103,6 @@ def data_selection(runname, detector, run_dir, save_dir):
     cut_trigger = np.loadtxt(save_path_trigger, dtype=int)
     cut_noise = np.loadtxt(save_path_noise, dtype=int)
     
-    # debug
-    print(cut_trigger)
-    print(cut_noise)
-    
     ### DATA OF INTEREST
     # time array
     fs = reader_processed.all.run_tree.freq
@@ -117,11 +113,6 @@ def data_selection(runname, detector, run_dir, save_dir):
     
     # pulse
     pulse_data = reader_trig.all.tree.Trace_Heat_A_Raw[cut_trigger]
-    
-#    fft_pulse_data = [np.fft.fft(pulse) for pulse in pulse_data]
-#    psd_pulse_data = [rmc.psd(fft, fs)[1] for fft in fft_pulse_data]
-#    angle_pulse_data = [rmc.angle_psd(fft) for fft in fft_pulse_data]
-    
     
     # noise
     noise_data = reader_noise.all.tree.Trace_Heat_A_Raw[cut_noise]

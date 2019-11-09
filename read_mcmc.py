@@ -18,8 +18,8 @@ plt.close('all')
 # =============================================================================
 # GETTING THE FILES
 # =============================================================================
-SAVE_DIR = '/home/misiak/Analysis/pulse_fitting/mcmc_output/ti13l002_RED71_3exp'
-#SAVE_DIR = '/home/misiak/Analysis/pulse_fitting/mcmc_output/ti12l000_RED71_2exp'
+#SAVE_DIR = '/home/misiak/Analysis/pulse_fitting/mcmc_output/ti13l002_RED71_3exp'
+SAVE_DIR = '/home/misiak/Analysis/pulse_fitting/mcmc_output/ti12l000_RED71_2exp'
 
 h5_path = "{}/mcmc_output.h5".format(SAVE_DIR)
 cfg_path = "{}/mcmc_config.json".format(SAVE_DIR)
@@ -203,43 +203,46 @@ nbins = 50
 range_corner = [(e.min(), e.max()) for e in chain_flat.T]
 
 
-def init_walkers(nwalkers):
-    coord_list = list()
-    for dist, arg1, arg2 in zip(dist_list, arg1_list, arg2_list):
-        coord = rmc.rvs(arg1, arg2, dist, size=(nwalkers, 1))
-        coord_list.append(coord)
-    return np.concatenate(coord_list, axis=1)
+#def init_walkers(nwalkers):
+#    coord_list = list()
+#    for dist, arg1, arg2 in zip(dist_list, arg1_list, arg2_list):
+#        coord = rmc.rvs(arg1, arg2, dist, size=(nwalkers, 1))
+#        coord_list.append(coord)
+#    return np.concatenate(coord_list, axis=1)
+#
+#A = init_walkers(nsamples*100)
+
+from _atelier_class import Atelier
+ato = Atelier('archive/ti04l001_RED71_2exp/true_data.npz', '2exp')
+
+A = ato.init_walkers(nsamples)
 
 
-A = init_walkers(nsamples*100)
 
 fig_corner = corner.corner(
-        A[A[:,2]>-1.40],
-        bins=nbins,
-        smooth=1,
-        fill_contours=True,
-        plot_datapoints=True,
-        color='grey',
-        range=range_corner,
-)
-
-corner.corner(
         chain_flat,
         bins=nbins,
         smooth=1,
         labels=labels,
         quantiles=[0.16, 0.5, 0.84],
-        fig=fig_corner,
         truths=xopt,
         plot_datapoints=True,
         fill_contours=True,
         use_math_text=True,
         color='blue',
         truth_color='crimson',
-#        show_titles=True,
-#        title_fmt=".2g",        
-#        title_kwargs={"fontsize": 10},
-        range=range_corner,
+#        range=range_corner,
+)
+
+corner.corner(
+        A,
+        bins=nbins,
+        smooth=1,
+        fill_contours=True,
+        plot_datapoints=True,
+        color='grey',
+        fig=fig_corner,        
+#        range=range_corner,
 )
 
 # editing the 1d histogram

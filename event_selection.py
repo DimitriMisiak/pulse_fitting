@@ -8,21 +8,24 @@ Created on Tue Oct 29 16:32:02 2019
 import sys
 import os
 import json
+import matplotlib.pyplot as plt
+plt.close('all')
 
-from fake_data import data_generation
+from _true_data import data_selection
 from analysis_config import proto_fitting
 
+
 # getting arguments from command line
-if len(sys.argv) != 2:
-    raise Exception('Expecting 1 argument: model')
+if len(sys.argv) != 4:
+    raise Exception('Expecting 3 arguments: stream, detector and model')
     
-model, = sys.argv[1:]
+stream, detector, model = sys.argv[1:]
 
 # hard coding the DATA and SAVE directories
 DATA_DIR_LOCAL = '/home/misiak/Data/data_run59'
-ARC_DIR_LOCAL = '/home/misiak/projects/pulse_fitting/archive'
+ARC_DIR_LOCAL = '/home/misiak/projects/Analysis/pulse_fitting/event_library'
 DATA_DIR_CC = '/sps/edelweis/CRYO_IPNL/BatchOUTPUT'
-ARC_DIR_CC = '/pbs/home/d/dmisiak/mcmc_output'
+ARC_DIR_CC = '/pbs/home/d/dmisiak/Analysis/pulse_fitting/event_library'
 
 # priority to local path, then CC, then raise exception of paths not found.
 if os.path.isdir(ARC_DIR_LOCAL):
@@ -48,7 +51,8 @@ else:
             ).format(DATA_DIR_LOCAL, DATA_DIR_CC)
     )
 
-label = '_'.join((model, 'fake'))
+
+label = '_'.join((stream, detector, model))
 save_dir = '/'.join((ARC_DIR, label))
 
 # super mkdir for the save directories
@@ -60,46 +64,23 @@ for path in path_list:
         if not os.path.isdir(path):
             raise
 
-# data generation from fake_data.py
-data_path = '/'.join((save_dir, 'fake_data.npz'))
-#data_selection(stream, detector, DATA_DIR, save_dir)
-data_generation(model, data_path)
-
-# manual fitting from analysis_config.py
-pf = proto_fitting(data_path, model, save_dir)
-param_opt = pf.get_param()
-
-ndim = len(param_opt)
+# data selection from true_data.py
+data_selection(stream, detector, DATA_DIR, save_dir)
 
 
 # creating the config_file for the mcmc
 config = dict()
 config['Data'] = {
-        'true_data': False,    
+        'true_data': True,
+        'directory': DATA_DIR,
+        'stream': stream,
+        'detector': detector,         
+}
+config['Selection'] = {
+        'directory': ARC_DIR,
 }
 
-config['Parameters'] = {
-        'label': ['p{}'.format(i) for i in range(ndim)],
-        'pinit': list(param_opt),
-}
-
-# by default, normal distribution centered in pinit
-# and with a relative sigma of 0.1
-config['Prior'] = {
-        'distribution': ['norm',]*ndim,
-        'arg1' : list(param_opt),
-        'arg2' : [abs(0.1*p) for p in param_opt],
-}
-
-config['Model'] = model
-
-config['MCMC'] = {
-        'walkers_per_dim': 10,
-        'max_iterations': int(1e5),
-        'tau_rtol': 0.01,
-}
-
-configpath = '/'.join((save_dir, 'mcmc_config.json'))
+configpath = '/'.join((save_dir, 'config.json'))
 with open(configpath, 'w') as cfg:
     json.dump(config, cfg, indent=4)
         
