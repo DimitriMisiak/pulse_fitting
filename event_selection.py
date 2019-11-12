@@ -20,7 +20,7 @@ if len(sys.argv) != 3:
 stream, detector = sys.argv[1:]
 
 # hard coding the DATA and SAVE directories
-DATA_DIR_LOCAL = '/home/misiak/Data/data_run59'
+DATA_DIR_LOCAL = '/home/misiak/Data/data_run57'
 LIB_DIR_LOCAL = '/home/misiak/Analysis/pulse_fitting/event_library_test'
 DATA_DIR_CC = '/sps/edelweis/CRYO_IPNL/BatchOUTPUT'
 LIB_DIR_CC = '/pbs/home/d/dmisiak/Analysis/pulse_fitting/event_library'
