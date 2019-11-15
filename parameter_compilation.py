@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import os
 
 plt.close('all')
+plt.rcParams['text.usetex']=True
 
 res_dir = '/home/misiak/Analysis/pulse_fitting/results'
 log_dir = '/home/misiak/Analysis/pulse_fitting/stream_logs'
@@ -57,6 +58,14 @@ temp_57a = temp_57.astype(float)[cut_ind]
 polar_57a = polar_57.astype(float)[cut_ind]
 
 
+## raw to fine
+#xopt_57_bis = 10**xopt_57
+#xinf_57 = 10**(xopt_57-sinf_57)
+#xsup_57 = 10**(ssup_57 + xopt_57)
+#sinf_57 = xopt_57_bis - xinf_57
+#ssup_57 = xsup_57 - xopt_57_bis
+#xopt_57 = xopt_57_bis
+
 #### RUN 59
 xopt_59 = list()
 sinf_59 = list()
@@ -82,18 +91,27 @@ ssup_59 = np.array(ssup_59)[cut_ind]
 temp_59a = temp_59.astype(float)[cut_ind]
 polar_59a = polar_59.astype(float)[cut_ind]
 
+## raw to fine
+#xopt_59_bis = 10**xopt_59
+#xinf_59 = 10**(xopt_59 - sinf_59)
+#xsup_59 = 10**(ssup_59 + xopt_59)
+#sinf_59 = xopt_59_bis - xinf_59
+#ssup_59 = xsup_59 - xopt_59_bis
+#xopt_59 = xopt_59_bis
+
+
 # =============================================================================
 # EPS PLOT
 # =============================================================================
 
-temp_color = ('skyblue', 'limegreen', 'coral', 'k')
+temp_color = ('b', 'green', 'orange', 'red')
 title_list = ('eps plot', 'tau1 plot', 'tau2 plot', 'tau th plot')
 
-fig, axes = plt.subplots(nrows=2, ncols=2)
+fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(10,7))
 axes = axes.flatten()
 
 for j,ax in enumerate(axes):
-    ax.set_title(title_list[j])
+#    ax.set_title(title_list[j])
     
     cut_14 = (temp_57a == 14)
     cut_16 = (temp_57a == 16)
@@ -106,7 +124,9 @@ for j,ax in enumerate(axes):
         col = temp_color[i]
         
         ax.errorbar(polar_57a[cut], xopt_57[cut,j], yerr[:,cut],
-                     ls='none', marker='s', color=col)
+                     ls='none', marker='s', color=col, alpha=0.7)
+#        ax.plot(polar_57a[cut], xopt_57[cut,j],
+#                     ls='none', marker='s', color=col, alpha=0.3)
     
     cut_14 = (temp_59a == 14)
     cut_16 = (temp_59a == 16)
@@ -119,10 +139,18 @@ for j,ax in enumerate(axes):
         col = temp_color[i]
         
         ax.errorbar(polar_59a[cut], xopt_59[cut,j], yerr[:,cut],
-                     ls='none', marker='o', color=col)
-    
+                     ls='none', marker='o', color=col, mec='k', alpha=0.7)
+#        ax.plot(polar_59a[cut], xopt_59[cut,j],
+#                     ls='none', marker='o', color=col, mec='k',alpha=0.3)    
     ax.set_xscale('log')
 
-for ax in axes[1:]:
-#    ax.set_yscale('log')
-    pass
+for ax in axes:
+    ax.set_xlabel('Bias Current [nA]')
+    ax.grid()
+    
+axes[0].set_ylabel(r'$\epsilon$')
+axes[1].set_ylabel(r'$log_{10}(\tau_1)$')
+axes[2].set_ylabel(r'$log_{10}(\tau_2)$')
+axes[3].set_ylabel(r'$log_{10}(\tau_3)$')
+
+fig.tight_layout()
