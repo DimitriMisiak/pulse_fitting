@@ -72,8 +72,7 @@ else:
 ### Parameters from the MCMC
 ato = Atelier(npz_path, model)
 WALKERS_PER_DIM = 16
-#MAX_ITER = int(1e5)
-MAX_ITER = 100
+MAX_ITER = int(1e5)
 
 ### creating the config_file for the mcmc
 config = dict()
