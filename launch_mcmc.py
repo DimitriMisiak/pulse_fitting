@@ -72,7 +72,8 @@ else:
 ### Parameters from the MCMC
 ato = Atelier(npz_path, model)
 WALKERS_PER_DIM = 16
-MAX_ITER = int(1e5)
+#MAX_ITER = int(1e5)
+MAX_ITER = 100
 
 ### creating the config_file for the mcmc
 config = dict()
@@ -86,6 +87,7 @@ config['MCMC'] = {
         'walkers_per_dim': WALKERS_PER_DIM,
         'max_iter': MAX_ITER,
         'directory': OUT_DIR,
+        'success': False,
 }
 
 configpath = '/'.join((out_dir, 'config.json'))
@@ -101,4 +103,10 @@ mcmc_from_atelier(
         output_dir=out_dir,
         progress=True
 )
-    
+
+### if mcmc is successful
+config['MCMC']['success'] = True
+with open(configpath, 'w') as cfg:
+    json.dump(config, cfg, indent=4)
+
+  
