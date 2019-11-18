@@ -150,6 +150,64 @@ class Model_analytical(Model):
         theta_origin = self.inv_vchange(theta)
         return self.function_origin(theta_origin, time_array)
 
+
+class Model_1exp_log(Model_analytical):
+    """ Self explanatory """
+    def __init__(self):
+        super(Model_1exp_log, self).__init__()        
+    
+    @property
+    def model_origin(self):
+        return rmc.Model_pulse('1exp')
+    
+    @property
+    def nparam(self):
+        return 3
+    
+    @property
+    def labels(self):
+        labs = [
+                r"$log_{{10}}(\tau_1)$", 
+                r"$log_{{10}}(\tau_{{th}})$",
+                r"$t_0$"
+        ]
+        return labs
+    
+    @property
+    def prior_dist(self):
+        dist_list  = [
+                st.norm(-1.5, 1),
+                st.norm(-2.5, 1),
+                st.norm(0.5, 1),
+        ]
+        return dist_list
+    
+    def prior_condition(self, theta):
+        t1, s, t0 = theta
+        cond_tau = (s <= t1)
+        if cond_tau:
+            return True
+        else:
+            return False
+
+    def prior_condition_broadcastable(self, theta):
+        t1, s, t0 = theta.T
+        cond_s = (s <= t1)
+        truth_array = cond_s
+        return truth_array
+    
+    def vchange(self, theta_origin):
+        t1, s, t0 = theta_origin
+        logt1 = m.log10(t1)
+        logs = m.log10(s)
+        return logt1, logs, t0        
+        
+    def inv_vchange(self, theta):
+        logt1, logs, t0 = theta
+        t1 = 10**logt1
+        s = 10**logs
+        return t1, s, t0
+
  
 class Model_2exp_log(Model_analytical):
     """ Self explanatory """
@@ -350,6 +408,8 @@ class Atelier(object):
             self.model = Model_2exp_log() 
         elif model == '3exp':
             self.model = Model_3exp_log()
+        elif model == '1exp':
+            self.model = Model_1exp_log() 
         else:
             raise Exception('Model "{}" is not implemented yet.'.format(model))
     
@@ -442,34 +502,42 @@ if __name__ == '__main__':
 #    data_path = 'archive/2exp_fake/fake_data.npz'
     data_path = 'archive/ti04l001_RED71_2exp/true_data.npz'    
     
-    ato = Atelier(data_path, '2exp')
+    ato1 = Atelier(data_path, '1exp')
+    ato2 = Atelier(data_path, '2exp')
+    ato3 = Atelier(data_path, '3exp')
     
-    p0 = ato.parameters_0
+    for ato in (ato1, ato2, ato3):
+        for i in range(1000):
+            ato.model.function(ato.model.parameters_0, ato.time_array)
     
-    print("Number of parameters is:\n{}".format(ato.ndim))
-    print("Labels of parameters are:\n{}".format(ato.labels))
-    print("Default parameters are:\n{}".format(p0))
-
-    # testing Atelier methods
-    chi2_amp_list = ato.chi2_amp_fun(p0)
-    chi2 = ato.chi2_fun(p0)
-    lnprior_list = ato.lnprior_list(p0)
-    lnprior = ato.lnprior(p0)
-    logprob = ato.logprob(p0)
-
-    samples = ato.init_walkers(100000)
-    
-    import matplotlib.pyplot as plt
-    plt.close('all')
-
-    import corner
-    fig_corner = corner.corner(
-        samples,
-        bins=50,
-        smooth=1,
-        fill_contours=True,
-        plot_datapoints=True,
-        color='grey',
-        labels=ato.labels,
-    )   
-    
+#    ato = ato2
+#    
+#    p0 = ato.parameters_0
+#    
+#    print("Number of parameters is:\n{}".format(ato.ndim))
+#    print("Labels of parameters are:\n{}".format(ato.labels))
+#    print("Default parameters are:\n{}".format(p0))
+#
+#    # testing Atelier methods
+#    chi2_amp_list = ato.chi2_amp_fun(p0)
+#    chi2 = ato.chi2_fun(p0)
+#    lnprior_list = ato.lnprior_list(p0)
+#    lnprior = ato.lnprior(p0)
+#    logprob = ato.logprob(p0)
+#
+#    samples = ato.init_walkers(100000)
+#    
+#    import matplotlib.pyplot as plt
+#    plt.close('all')
+#
+#    import corner
+#    fig_corner = corner.corner(
+#        samples,
+#        bins=50,
+#        smooth=1,
+#        fill_contours=True,
+#        plot_datapoints=True,
+#        color='grey',
+#        labels=ato.labels,
+#    )   
+#    
