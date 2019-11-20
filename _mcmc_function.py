@@ -94,16 +94,16 @@ def mcmc_from_atelier(
 
 
 if __name__ == '__main__':
-    
+
     output_dir = 'archive'
     
     data_path = 'archive/true_data.npz'
-    ato = Atelier(data_path, '2exp')
+    ato = Atelier(data_path, '1exp')
     
     mcmc_from_atelier(
             ato,
             walkers_per_dim=16,
-            max_iter=int(2),
+            max_iter=int(2000),
             output_dir=output_dir,
             progress=True
     )

@@ -20,6 +20,8 @@ def data_generation(model, npz_path,
         model_pulse = rmc.Model_pulse(model='2exp')
     elif model == '3exp':
         model_pulse = rmc.Model_pulse(model='3exp')
+    elif model == '1exp':
+        model_pulse = rmc.Model_pulse(model='1exp')
     else:
         raise Exception('Model "{}" is not implemented yet.'.format(model))
         
