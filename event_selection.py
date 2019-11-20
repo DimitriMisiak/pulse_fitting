@@ -23,7 +23,7 @@ stream, detector = sys.argv[1:]
 DATA_DIR_LOCAL = '/home/misiak/Data/data_run57'
 LIB_DIR_LOCAL = '/home/misiak/Analysis/pulse_fitting/event_library_test'
 DATA_DIR_CC = '/sps/edelweis/CRYO_IPNL/BatchOUTPUT'
-LIB_DIR_CC = '/pbs/home/d/dmisiak/Analysis/pulse_fitting/event_library'
+LIB_DIR_CC = '/sps/edelweis/dmisiak/Analysis/pulse_fitting/event_library'
 
 # priority to local path, then CC, then raise exception of paths not found.
 if os.path.isdir(LIB_DIR_LOCAL):

@@ -23,7 +23,7 @@ model, = sys.argv[1:]
 
 # hard coding the DATA and SAVE directories
 LIB_DIR_LOCAL = '/home/misiak/Analysis/pulse_fitting/event_library_test'
-LIB_DIR_CC = '/pbs/home/d/dmisiak/Analysis/pulse_fitting/event_library'
+LIB_DIR_CC = '/sps/edelweis/dmisiak/Analysis/pulse_fitting/event_library'
 
 # priority to local path, then CC, then raise exception of paths not found.
 if os.path.isdir(LIB_DIR_LOCAL):

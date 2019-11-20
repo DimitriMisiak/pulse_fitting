@@ -19,9 +19,9 @@ stream, detector, model = sys.argv[1:]
 
 # hard coding the LIBrary and OUTput directories
 LIB_DIR_LOCAL = '/home/misiak/Analysis/pulse_fitting/event_library_test'
-LIB_DIR_CC = '/pbs/home/d/dmisiak/Analysis/pulse_fitting/event_library'
+LIB_DIR_CC = '/sps/edelweis/dmisiak/Analysis/pulse_fitting/event_library'
 OUT_DIR_LOCAL = '/home/misiak/Analysis/pulse_fitting/mcmc_output_test'
-OUT_DIR_CC = '/pbs/home/d/dmisiak/Analysis/pulse_fitting/mcmc_output'
+OUT_DIR_CC = '/sps/edelweis/dmisiak/Analysis/pulse_fitting/mcmc_output'
 
 # priority to local path, then CC, then raise exception of paths not found.
 if os.path.isdir(LIB_DIR_LOCAL):
